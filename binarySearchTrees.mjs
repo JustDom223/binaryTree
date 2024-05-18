@@ -84,16 +84,84 @@ class Tree{
         }
         return node
       }
-      find(key){
-        let currentNode = this.root
-        let left = this.find(currentNode.left)
-        let right = this.find(currentNode.right)
-        if(currentNode.data === key){
-          return currentNode
+      find(key,node = this.root){
+        if(node == null) return null;
+
+        if(key < node.data){
+          node.left = this.find(key,node.left)
+        }else if(key > node.data){
+          node.right = this.find(key,node.right)
+        }else{
+          return node
         }
-        // throw new Error('There is no node with this key')
+        return node
+      }
+
+      levelOrder(callback) {
+        let node = this.root;
+        if (node == null) return [];
+        const queue = [node];
+        const resultArray = [];
+      
+        while (queue.length > 0) {
+          const currentNode = queue.shift();
+          if (callback) {
+            callback(currentNode.data);
+          } else {
+            resultArray.push(currentNode.data);
+          }
+      
+          if (currentNode.left) queue.push(currentNode.left);
+          if (currentNode.right) queue.push(currentNode.right);
+        }
+      
+        if (!callback) {
+          return resultArray;
+        }
+      }
+
+      inOrder(node = this.root, callback){
+        if(node == null) return []
+        let newArray = this.inOrder(node.left)
+        if(callback){
+          callback(node.data)
+        }else{
+          newArray = newArray.concat(node.data)
+        }
+        newArray = newArray.concat(this.inOrder(node.right))
+        return newArray
+        
+      }
+      postOrder(node = this.root, callback){
+        if(node == null) return []
+        let newArray = this.postOrder(node.left)
+        newArray = newArray.concat(this.postOrder(node.right))
+        if(callback){
+          callback(node.data)
+        }else{
+          newArray = newArray.concat(node.data)
+        }
+        return newArray
+        
+      }
+
+      height(node){
+        if(node == null) return -1
+
+        const leftCount = this.height(node.left)
+        const rightCount = this.height(node.right)
+
+        return Math.max(leftCount,rightCount) + 1
+      }
+
+      depth(node){
+        if(node == null) return -1
+
+        const count = 
       }
     }
+
+
 const thisArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 
 const BST = new Tree(thisArray)
@@ -112,6 +180,7 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     }
   };
  
+
 prettyPrint(BST.root)
 BST.insert(69)
 BST.insert(14)
@@ -137,3 +206,12 @@ prettyPrint(BST.root)
 // prettyPrint(BST.root)
 // BST.delete(67)
 // prettyPrint(BST.root)
+console.log(BST.find(8))
+
+let newNode=BST.find(8)
+console.log(BST.height(newNode))
+
+// const result = BST.inOrder();
+// console.log(result)
+// const result2 = BST.postOrder();
+// console.log(result2)
